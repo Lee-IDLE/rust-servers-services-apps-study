@@ -1,5 +1,5 @@
 use super::router::Router;
-use _http:httprequest::HttpRequest;
+use http::httprequest::HttpRequest;
 use std::io::prelude::*;
 use std::net::TcpListener;
 use std::str;
@@ -20,7 +20,7 @@ impl<'a> Server<'a> {
 
         // 루프 안에서 유입되는 커넥션을 리스닝한다.
         for stream in connection_listener.incoming() {
-            let mut stream = tream.unwrap();
+            let mut stream = stream.unwrap();
             println!("Connection established");
             let mut read_buffer = [0; 90];
             stream.read(&mut read_buffer).unwrap();
