@@ -23,8 +23,8 @@ pub struct OrderStatus {
     order_status: String,
 }
 
-pub struct StatisPageHandler;
-impl Handler for StatisPageHandler {
+pub struct StaticPageHandler;
+impl Handler for StaticPageHandler {
     fn handle(req: &HttpRequest) -> HttpResponse {
         // 요청 받은 정적 페이지의 경로를 얻는다
         let http::httprequest::Resource::Path(s) = &req.resource;
@@ -64,7 +64,7 @@ impl WebServiceHandler {
     fn load_json() -> Vec<OrderStatus> {
         let default_path = format!("{}/data", env!("CARGO_MANIFEST_DIR"));
         let data_path = env::var("DATA_PATH").unwrap_or(default_path);
-        let full_path = format!("{}/{}", data_path, "order_status.json");
+        let full_path = format!("{}/{}", data_path, "orders.json");
         let json_contents = fs::read_to_string(full_path);
         let orders: Vec<OrderStatus> = serde_json::from_str(json_contents.unwrap().as_str()).unwrap();
         orders

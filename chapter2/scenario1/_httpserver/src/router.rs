@@ -1,5 +1,5 @@
-use super::handler::{Handler, PageNotFoundHandler, StatitcPageHandler, WebServiceHandler};
-use http::{httprequest, httprequest::HttpRequest, HttpResponse::HttpResponse};
+use super::handler::{Handler, PageNotFoundHandler, StaticPageHandler, WebServiceHandler};
+use http::{httprequest, httprequest::HttpRequest, httpresponse::HttpResponse};
 use std::io::prelude::*;
 
 pub struct Router;
@@ -19,7 +19,7 @@ impl Router {
                         }
                         // 그렇지 않면 정적 페이지 핸들러를 호출한다
                         _ => {
-                            let resp: HttpResponse = StatitcPageHandler::handle(&req);
+                            let resp: HttpResponse = StaticPageHandler::handle(&req);
                             let _ = resp.send_response(stream);
                         }
                     }
