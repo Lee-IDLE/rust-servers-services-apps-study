@@ -4,6 +4,9 @@
 3. 웹 애플리케이션을 ㅜ축하고 라우트와 핸들러를 애플리케이션에 등록한다.
 4. 웹 애플리케이션과 연결된 HTTP 서버를 구축하고, 서버를 실행한다.
 */
+
+// cargo run -p tutor-nodb --bin basic-server (ezytutors에서 빌드할 때)
+// cargo run --bin basic-server (tutor-nodb에서 빌드할 때)
 fn main() {
     println!("Hello, world!");
 }
