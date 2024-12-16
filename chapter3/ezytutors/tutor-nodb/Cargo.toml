@@ -2,7 +2,9 @@
 name = "tutor-nodb"
 version = "0.1.0"
 edition = "2021"
-default-run = "tutor-service
+# 기본 바이너리 지정으로 tutor-service 바이너리를 기본적으로 실행한다
+default-run = "tutor-service" 
+# default-runr이 없으면 cargo run --bin tutor-service로 실행해야 한다
 
 [[bin]]
 name = "basic-server"
@@ -14,3 +16,7 @@ name = "tutor-service"
 # Actix 웹 프레임워크와 런타임
 actix-web = "4.9.0"
 actix-rt = "2.10.0"
+# Data 직렬화 라이브러리
+serde = { version = "1.0.216", features = ["derive"] }
+# 다른 유틸리티
+chrono = { version = "0.4.39", features = ["serde"]}
