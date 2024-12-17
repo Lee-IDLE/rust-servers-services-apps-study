@@ -21,8 +21,8 @@ pub async fn health_check_handler(app_state: web::Data<AppState>) -> HttpRespons
  * 이 함수에 대한 테스트 스크립트를 작성하자. 이 ㅡ크립트는 자동화 테스트에서 사용할 수 있다.
  */
 pub async fn new_course(
+    app_state: web::Data<AppState>,
     new_course: web::Json<Course>,
-    app_state: web::Data<AppState>
 ) -> HttpResponse {
     println!("Received new course");
     let course_count_for_user = app_state
@@ -41,6 +41,33 @@ pub async fn new_course(
     };
     app_state.courses.lock().unwrap().push(new_course);
     HttpResponse::Ok().json("Added course")
+}
+
+/**
+ * 1. AppState로부터 강의들을 얻는다.
+ * 2. 요청된 tutor_id와 일치하는 강의들을 필터링한다.
+ * 3. 강의 리스트를 반환한다.
+ */
+pub async fn get_courses_for_tutor(
+    app_state: web::Data<AppState>,
+    params: web::Path<i32>
+) -> HttpResponse{
+    let tutor_id: i32 = params.into_inner();
+
+    let filtered_courses = app_state
+        .courses
+        .lock()
+        .unwrap()
+        .clone()
+        .into_iter()
+        .filter(|course| course.tutor_id == tutor_id)
+        .collect::<Vec<Course>>();
+
+    if filtered_courses.len() > 0 {
+        HttpResponse::Ok().json(filtered_courses)
+    } else {
+        HttpResponse::Ok().json("No courses found for tutor".to_string())
+    }
 }
 
 #[cfg(test)]
@@ -65,8 +92,20 @@ mod tests {
             courses: Mutex::new(vec![]),
         });
         // new_course 핸들러 함수 호출하여 객체 생성
-        let resp = new_course(course, app_state).await;
+        let resp = new_course(app_state, course).await;
         // resp 객체의 상태가 Ok 값인지 확인
+        assert_eq!(resp.status(), StatusCode::OK);
+    }
+
+    #[actix_web::test]
+    async fn get_all_courses_success() {
+        let app_state: web::Data<AppState> = web::Data::new(AppState{
+            health_check_response: "".to_string(),
+            visit_count: Mutex::new(0),
+            courses: Mutex::new(vec![])
+        });
+        let tutor_id: web::Path<i32> = web::Path::from(1);
+        let resp = get_courses_for_tutor(app_state, tutor_id).await;
         assert_eq!(resp.status(), StatusCode::OK);
     }
 }
