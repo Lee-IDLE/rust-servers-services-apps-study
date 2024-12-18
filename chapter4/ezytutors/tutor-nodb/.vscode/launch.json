@@ -1,0 +1,156 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'basic-server'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=basic-server",
+                    "--package=tutor-nodb"
+                ],
+                "filter": {
+                    "name": "basic-server",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'basic-server'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=basic-server",
+                    "--package=tutor-nodb"
+                ],
+                "filter": {
+                    "name": "basic-server",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'tutor-nodb'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=tutor-nodb",
+                    "--package=tutor-nodb"
+                ],
+                "filter": {
+                    "name": "tutor-nodb",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'tutor-nodb'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=tutor-nodb",
+                    "--package=tutor-nodb"
+                ],
+                "filter": {
+                    "name": "tutor-nodb",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'tutor-service'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=tutor-service",
+                    "--package=tutor-nodb"
+                ],
+                "filter": {
+                    "name": "tutor-service",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'tutor-service'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=tutor-service",
+                    "--package=tutor-nodb"
+                ],
+                "filter": {
+                    "name": "tutor-service",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'ezytutors'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=ezytutors",
+                    "--package=ezytutors"
+                ],
+                "filter": {
+                    "name": "ezytutors",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'ezytutors'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=ezytutors",
+                    "--package=ezytutors"
+                ],
+                "filter": {
+                    "name": "ezytutors",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
