@@ -4,6 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace]
-member = ["tutor-nodb", tutor-db"]
+members = ["tutor-nodb", "tutor-db"]
 
 [dependencies]
