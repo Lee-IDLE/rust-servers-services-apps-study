@@ -23,6 +23,7 @@ async fn main() -> io::Result<()> {
 
     let databse_url = env::var("DATABASE_URL").expect(
         "DATABASE_URL is not set in .env file");
+    let db_pool = PgPool::connect(&databse_url).await.unwrap();
     let shared_data = web::Data::new(AppState {
         health_check_handler: "I'm good. You've aleardy asked me ".to_string(),
         visit_count: Mutex::new(0),

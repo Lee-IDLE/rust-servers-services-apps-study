@@ -18,7 +18,7 @@ pub struct Course {
 // cargo run --bin iter1
 // 위 명령어 입력시 $PROJECT_ROOT/src/bin 디렉터리의 
 // iter1.rs안에 있는 main 함수를 실행한다.
-#[actiex_rt::main]
+#[actix_rt::main]
 async fn main() -> io::Result<()> {
     // 환경 변수를 메모리에 로드
     dotenv().ok();
@@ -32,13 +32,10 @@ async fn main() -> io::Result<()> {
     let db_pool = PgPool::connect(&database_url).await.unwrap();
     // 실행할 쿼리를 정의한다.
     let course_rows = sqlx::query!(
-        r#"
-        SELECT course_id, tutor_id, course_name, posted_time 
-        FROM ezy_course_c4 where course_id = $1
-        "#, 1
+        r#"SELECT course_id, tutor_id, course_name, posted_time FROM ezy_course_c4 where course_id = $1"#, 
+        1
     )
-    // 데이터베이스 커넥션 풀의 참조를 전달해서 테이블의 모든 행을 가져온다.
-    .fetch_all(&db_pool) 
+    .fetch_all(&db_pool) // 데이터베이스 커넥션 풀의 참조를 전달해서 테이블의 모든 행을 가져온다.
     .await
     .unwrap();
 
@@ -49,7 +46,7 @@ async fn main() -> io::Result<()> {
             tutor_id: course_row.tutor_id,
             course_name: course_row.course_name,
             posted_time: Some(
-                chrono::NaiveDateTime::from(course_row.posted_time.unwrap()
+                chrono::NaiveDateTime::from(course_row.posted_time.unwrap())
             ),
         })
     }
