@@ -6,7 +6,7 @@ pub async fn get_courses_for_tutor_db(pool: &PgPool, tutor_id: i32) -> Vec<Cours
     let course_rows = sqlx::query!(
         "SELECT tutor_id, course_id, course_name, posted_time 
          FROM ezy_course_c4 
-         WHERE tutor_id = $s",
+         WHERE tutor_id = $1",
          tutor_id
     )
     .fetch_all(pool)
@@ -24,7 +24,7 @@ pub async fn get_courses_for_tutor_db(pool: &PgPool, tutor_id: i32) -> Vec<Cours
     .collect()
 }
 
-pub async fn get_course_details_db(pool: &PgPool, course_id: i32) -> Course {
+pub async fn get_course_details_db(pool: &PgPool, tutor_id: i32, course_id: i32) -> Course {
     // SQL 구문 준비
     let course_row = sqlx::query!(
         "SELECT tutor_id, course_id, course_name, posted_time 
