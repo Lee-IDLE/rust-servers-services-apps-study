@@ -4,3 +4,23 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+# Actix 웹 프레임워크와 런타임
+actix-web = "4.2.1"
+actix-rt = "2.10.0"
+
+# 환경 변수를 메모리에 로드한다.
+dotenv = "0.15.0"
+
+# Postgres 접근 라이브러리. sqlx 크레이트를 사용해 Postgres 데ㅣ터베이스와 비동기로 연결한다
+sqlx = {version = "0.8.2", features = ["postgres", "runtime-tokio-native-tls", "macros", "chrono"]}
+
+# 데이터 직렬화 라이브러리
+serde = {version = "1.0.216", features = ["derive"]}
+
+# 기타 유틸리티
+chrono = {version = "0.4.39", features = ["serde"]}
+
+# 빌드를 위한 Openssl이 개발 서버에 설치되어 있지 않은 경우
+# 바이너리를 빌드하기 위해 필요하다
+openssl = {version = "0.10.68", features = ["vendored"] }
+openssl-sys = {version = "0.9.104", features = ["vendored"] }
