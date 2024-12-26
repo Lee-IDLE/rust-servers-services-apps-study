@@ -15,11 +15,13 @@ mod models;
 mod routes;
 #[path = "../iter4/state.rs"]
 mod state;
+#[path = "../iter4/errors.rs"]
+mod errors;
 
 use routes::*;
 use state::AppState;
 
-/*
+
 #[actix_web::main]
 async fn main() -> io::Result<()> {
     dotenv().ok();
@@ -43,4 +45,3 @@ async fn main() -> io::Result<()> {
     // HTTP Server 시작
     HttpServer::new(app).bind("127.0.0.1:3000")?.run().await
 }
-*/
