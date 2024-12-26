@@ -13,7 +13,7 @@ pub async fn get_courses_for_tutor_db(pool: &PgPool, tutor_id: i32) -> Result<Ve
     .fetch_all(pool)
     .await?;
     // 결과 추출
-    let courses = course_rows
+    let courses: Vec<Course> = course_rows
     .iter()
     .map(|course_row| Course {
         course_id: course_row.course_id,
@@ -31,7 +31,7 @@ pub async fn get_courses_for_tutor_db(pool: &PgPool, tutor_id: i32) -> Result<Ve
     }
 }
 
-pub async fn get_course_details_db(pool: &PgPool, tutor_id: i32, course_id: i32) -> Course {
+pub async fn get_course_details_db(pool: &PgPool, tutor_id: i32, course_id: i32) -> Result<Course, EzyTutorError> {
     // SQL 구문 준비
     let course_row = sqlx::query!(
         "SELECT tutor_id, course_id, course_name, posted_time 
@@ -40,18 +40,22 @@ pub async fn get_course_details_db(pool: &PgPool, tutor_id: i32, course_id: i32)
          tutor_id, course_id
     )
     .fetch_one(pool)
-    .await
-    .unwrap();
+    .await;
+
     // 결과 추출
-    Course {
-        course_id: course_row.course_id,
-        tutor_id: course_row.tutor_id,
-        course_name: course_row.course_name.clone(),
-        posted_time: Some(chrono::NaiveDateTime::from(course_row.posted_time.unwrap()))
+    if let Ok(course_row) = course_row { 
+        Ok(Course {
+            course_id: course_row.course_id,
+            tutor_id: course_row.tutor_id,
+            course_name: course_row.course_name.clone(),
+            posted_time: Some(chrono::NaiveDateTime::from(course_row.posted_time.unwrap()))
+        })
+    }else {
+        Err(EzyTutorError::NotFound("Course id not found".into()))
     }
 }
 
-pub async fn post_new_course_db(pool: &PgPool, new_course: Course) -> Course {
+pub async fn post_new_course_db(pool: &PgPool, new_course: Course) -> Result<Course, EzyTutorError> {
     // SQL 구문 준비
     let course_row = sqlx::query!(
         "INSERT INTO ezy_course_c4 (tutor_id, course_id, course_name)
@@ -60,15 +64,14 @@ pub async fn post_new_course_db(pool: &PgPool, new_course: Course) -> Course {
          new_course.tutor_id, new_course.course_id, new_course.course_name
     )
     .fetch_one(pool)
-    .await
-    .unwrap();
+    .await?; // ?를 사용해 에러나면 바로 결과 반환(EzyTutorError 반환)
     // posted_time은 기본값이 설정되어 있어서 따로 넣어주지 않아도 된다.
 
     // 결과 추출
-    Course {
+    Ok(Course {
         course_id: course_row.course_id,
         tutor_id: course_row.tutor_id,
         course_name: course_row.course_name.clone(),
         posted_time: Some(chrono::NaiveDateTime::from(course_row.posted_time.unwrap())),
-    }
+    })
 }
