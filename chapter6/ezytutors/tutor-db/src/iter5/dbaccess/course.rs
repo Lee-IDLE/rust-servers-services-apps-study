@@ -1,4 +1,4 @@
-use crate::models::course::Course;
+use crate::models::course::{CreateCourse, UpdateCourse, Course};
 use crate::errors::EzyTutorError;
 use sqlx::postgres::PgPool;
 
@@ -55,7 +55,7 @@ pub async fn get_course_details_db(pool: &PgPool, tutor_id: i32, course_id: i32)
     }
 }
 
-pub async fn post_new_course_db(pool: &PgPool, new_course: Course) -> Result<Course, EzyTutorError> {
+pub async fn post_new_course_db(pool: &PgPool, new_course: CreateCourse) -> Result<Course, EzyTutorError> {
     // SQL 구문 준비
     let course_row = sqlx::query!(
         "INSERT INTO ezy_course_c4 (tutor_id, course_id, course_name)

@@ -1,7 +1,7 @@
 use crate::state::AppState;
 use crate::dbaccess::course::*;
 use crate::errors::EzyTutorError;
-use crate::models::course::Course;
+use crate::models::course::{CreateCourse, UpdateCourse, Course};
 
 use actix_web::{web, HttpResponse};
 
@@ -31,27 +31,42 @@ pub async fn get_course_details(
     app_state: web::Data<AppState>,
     params: web::Path<(i32, i32)>
 ) -> Result<HttpResponse, EzyTutorError> {
-    /*
-    let tuple = params.0;
-    let tutor_id: i32 = i32::try_from(tuple.0).unwrap();
-    let course_id: i32 = i32::try_from(tuple.1).unwrap();
-    */
     // routes에서 라우트를 /{tutor_id}/{course_id}로 정의했기 때문에 아래와 같이 함
-    let (tutor_id, course_id) = (params.0, params.1);
+    let (tutor_id, course_id) = params.into_inner();
     get_course_details_db(&app_state.db, tutor_id, course_id)
     .await
     .map(|course| {HttpResponse::Ok().json(course)})   
 }
 
 pub async fn post_new_course(
-    new_course: web::Json<Course>,
+    new_course: web::Json<CreateCourse>,
     app_state: web::Data<AppState>
 ) -> Result<HttpResponse, EzyTutorError> {
-    post_new_course_db(&app_state.db, new_course.into())
+    post_new_course_db(&app_state.db, new_course.into_inner())
     .await
     .map(|course| HttpResponse::Ok().json(course))
 }
 
+pub async fn delete_course(
+    app_state: web::Data<AppState>,
+    params: web::Path<(i32, i32)>
+) -> Result<HttpResponse, EzyTutorError> {
+    let (tutor_id, course_id) = params.into_inner();
+    delete_course_db(&app_state.db, tutor_id, course_id)
+    .await
+    .map(|course| HttpResponse::Ok().json(course))
+}
+
+pub async fn update_course_details(
+    app_state: web::Data<AppState>,
+    update_course: web::Json<UpdateCourse>,
+    params: web::Path<(i32, i32)>
+) -> Result<HttpResponse, EzyTutorError> {
+    let (tutor_id, course_id) = params.into_inner();
+    update_course_details_db(&app_state.db, tutor_id, course_id, update_course.into())
+    .await
+    .map(|course| HttpResponse::Ok().json(course))
+}
 #[cfg(test)]
 mod test {
     // test 돌리면 테스트 코드 course_id: 3이 들어가므로 delete 시켜줄 필요가 있다.
