@@ -29,6 +29,13 @@ impl From<web::Json<Course>> for Course {
             tutor_id: course.tutor_id,
             course_id: course.course_id,
             course_name: course.course_name.clone(),
+            course_description: course.course_description.clone(),
+            course_format: course.course_format.clone(),
+            course_structure: course.course_structure.clone(),
+            course_duration: course.course_duration.clone(),
+            course_price: course.course_price,
+            course_language: course.course_language.clone(),
+            course_level: course.course_level.clone(),
             posted_time: course.posted_time,
         }
     }

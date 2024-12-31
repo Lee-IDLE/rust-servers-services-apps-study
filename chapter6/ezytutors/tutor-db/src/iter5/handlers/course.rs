@@ -69,11 +69,8 @@ pub async fn update_course_details(
 }
 #[cfg(test)]
 mod test {
-    // test 돌리면 테스트 코드 course_id: 3이 들어가므로 delete 시켜줄 필요가 있다.
-    // docker exec -it rust_postgres psql -U truuser -d ezytutors
     use super::*;
-    use actix_web::http::StatusCode;
-    use chrono::NaiveDate;
+    use actix_web::{http::StatusCode, ResponseError};
     use dotenv::dotenv;
     use sqlx::postgres::PgPool;
     use std::env;
@@ -84,7 +81,7 @@ mod test {
         dotenv().ok();
         let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
         let db_pool = PgPool::connect(&database_url).await.unwrap();
-        let app_state: web::Data<AppState> = web::Data::new(AppState {
+        let app_state = web::Data::new(AppState{
             health_check_response: "".to_string(),
             visit_count: Mutex::new(0),
             db: db_pool,
@@ -97,43 +94,114 @@ mod test {
     }
 
     #[actix_rt::test]
-    async fn get_course_detail_test() {
+    async fn get_course_details_success_test() {
         dotenv().ok();
         let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
         let db_pool = PgPool::connect(&database_url).await.unwrap();
-        let app_state: web::Data<AppState> = web::Data::new(AppState {
+        let app_state = web::Data::new(AppState {
             health_check_response: "".to_string(),
             visit_count: Mutex::new(0),
             db: db_pool,
         });
-        
+
         let params: web::Path<(i32, i32)> = web::Path::from((1, 2));
         let resp = get_course_details(app_state, params).await.unwrap();
 
         assert_eq!(resp.status(), StatusCode::OK);
     }
 
-    #[ignore] // 테스트 안 하고 무시함
     #[actix_rt::test]
-    async fn post_course_success() {
+    async fn get_course_detail_failure_test() {
         dotenv().ok();
         let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
         let db_pool = PgPool::connect(&database_url).await.unwrap();
-        let app_state: web::Data<AppState> = web::Data::new(AppState {
+        let app_state = web::Data::new(AppState {
             health_check_response: "".to_string(),
             visit_count: Mutex::new(0),
             db: db_pool,
         });
 
-        let new_course_msg = Course {
-            course_id: 3,
+        let params: web::Path<(i32, i32)> = web::Path::from((1, 21));
+        let resp = get_course_details(app_state, params).await;
+
+        match resp {
+            Ok(_) => println!("Something wrong"),
+            Err(err) => assert_eq!(err.status_code(), StatusCode::NOT_FOUND)
+        }
+    }
+
+    #[ignore]
+    #[actix_rt::test]
+    async fn post_course_success() {
+        dotenv().ok();
+        let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
+        let db_pool = PgPool::connect(&database_url).await.unwrap();
+        let app_state = web::Data::new(AppState {
+            health_check_response: "".to_string(),
+            visit_count: Mutex::new(0),
+            db: db_pool,
+        });
+
+        let new_course_msg = CreateCourse {
             tutor_id: 1,
             course_name: "Third course".into(),
-            posted_time: Some(NaiveDate::from_ymd_opt(2020, 12, 18).and_then(|date| date.and_hms_opt(05, 40, 00)).unwrap()) ,
+            course_description: Some("This is test course".into()),
+            course_format: None,
+            course_level: Some("Beginner".into()),
+            course_price: None,
+            course_duration: None,
+            course_language: Some("English".into()),
+            course_structure: None,
         };
+
         let course_param = web::Json(new_course_msg);
         let resp = post_new_course(course_param, app_state).await.unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+    }
 
+    #[actix_rt::test]
+    async fn update_course_success() {
+        dotenv().ok();
+        let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
+        let db_pool = PgPool::connect(&database_url).await.unwrap();
+        let app_state = web::Data::new(AppState {
+            health_check_response: "".to_string(),
+            visit_count: Mutex::new(0),
+            db: db_pool,
+        });
+
+        let update_course_msg = UpdateCourse {
+            course_name: Some("Third course".into()),
+            course_description: Some("This is yet another test course".into()),
+            course_format: None,
+            course_level: Some("Intermediate".into()),
+            course_price: None,
+            course_duration: None,
+            course_language: Some("German".into()),
+            course_structure: None,
+        };
+
+        let params: web::Path<(i32, i32)> = web::Path::from((1, 21));
+        let course_param = web::Json(update_course_msg);
+        let resp = update_course_details(app_state, course_param, params).await.unwrap();
+
+        assert_eq!(resp.status(), StatusCode::OK);
+    }
+
+    #[actix_rt::test]
+    async fn delete_test_success() {
+        dotenv().ok();
+        let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
+        let db_pool = PgPool::connect(&database_url).await.unwrap();
+        let app_state = web::Data::new(AppState {
+            health_check_response: "".to_string(),
+            visit_count: Mutex::new(0),
+            db: db_pool,
+        });
+
+        let parameters: web::Path<(i32, i32)> = web::Path::from((1, 5));
+        let resp = delete_course(app_state, parameters).await.unwrap();
+        
         assert_eq!(resp.status(), StatusCode::OK);
     }
 }
