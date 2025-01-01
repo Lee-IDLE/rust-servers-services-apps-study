@@ -204,4 +204,23 @@ mod test {
         
         assert_eq!(resp.status(), StatusCode::OK);
     }
+
+    #[actix_rt::test]
+    async fn delete_test_failure() {
+        dotenv().ok();
+        let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
+        let db_pool = PgPool::connect(&database_url).await.unwrap();
+        let app_state = web::Data::new(AppState {
+            health_check_response: "".to_string(),
+            visit_count: Mutex::new(0),
+            db: db_pool,
+        });
+
+        let parameters: web::Path<(i32, i32)> = web::Path::from((1, 21));
+        let resp = delete_course(app_state, parameters).await;
+        match resp {
+            Ok(_) => println!("Somthing wrong"),
+            Err(err) => assert_eq!(err.status_code(), StatusCode::NOT_FOUND),
+        }
+    }
 }

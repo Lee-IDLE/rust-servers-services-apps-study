@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::errors::EzyTutorError;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, sqlx::FromRow)]
 pub struct Course {
     pub tutor_id: i32,
     pub course_id: i32,
@@ -89,13 +89,14 @@ impl TryFrom<web::Json<CreateCourse>> for CreateCourse {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug)]
 pub struct UpdateCourse {
     pub course_name: Option<String>,
     pub course_description: Option<String>,
     pub course_format: Option<String>,
     pub course_structure: Option<String>,
     pub course_duration: Option<String>,
-    pub course_price: Option<String>,
+    pub course_price: Option<i32>,
     pub course_language: Option<String>,
     pub course_level: Option<String>,
 }
