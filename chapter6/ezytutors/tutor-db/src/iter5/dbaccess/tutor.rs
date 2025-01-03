@@ -48,3 +48,24 @@ pub async fn get_tutor_details_db(pool: &PgPool, tutor_id: i32) -> Result<Tutor,
 
     Ok(tutor_row)
 }
+
+pub async fn post_new_tutor_db(pool: &PgPool, new_tutor: NewTutor) -> 
+Result<Tutor, EzyTutorError> {
+    let tutor_row = sqlx::query!(
+        "insert into ezy_tutor_c6 (
+        tutor_name, tutor_pic_url, tutor_profile
+        ) values ($1, $2, $3)
+        returning tutor_id, tutor_name, tutor_pic_url, tutor_profile",
+        new_tutor.tutor_name, new_tutor.tutor_pic_url, new_tutor.tutor_profile
+    )
+    .fetch_one(pool)
+    .await?;
+
+    // 결과를 꺼낸다.
+    Ok(Tutor{
+        tutor_id: tutor_row.tutor_id,
+        tutor_name: tutor_row.tutor_name,
+        tutor_pic_url: tutor_row.tutor_pic_url,
+        tutor_profile: tutor_row.tutor_profile
+    })
+}
