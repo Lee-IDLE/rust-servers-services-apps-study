@@ -25,9 +25,20 @@ impl From<web::Json<NewTutor>> for NewTutor {
         }
     }
 }
+
 #[derive(Deserialize, Debug, Clone)]
 pub struct UpdateTutor {
     tutor_name: Option<String>,
     tutor_pic_url: Option<String>,
     tutor_profile: Option<String>
+}
+
+impl From<web::Json<UpdateTutor>> for UpdateTutor {
+    fn from(update_tutor: web::Json<UpdateTutor>) -> Self {
+        UpdateTutor {
+            tutor_name: update_tutor.tutor_name.clone(),
+            tutor_pic_url: update_tutor.tutor_pic_url.clone(),
+            tutor_profile: update_tutor.tutor_profile.clone()
+        }
+    }
 }
