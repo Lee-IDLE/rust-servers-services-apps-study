@@ -2,17 +2,21 @@
 drop table if exists ezy_course_c6 cascade;
 drop table if exists ezy_tutor_c6;
 
+/* app 사용자가 존재하면 삭제하고 재생성한다 */
+--drop user if exists truuser;
+--create user truuser with password 'trupwd';
+
 /* 테이블을 생성한다 */
 create table ezy_tutor_c6 (
     tutor_id serial primary key,
     tutor_name varchar(200) not null,
     tutor_pic_url varchar(200) not null,
-    tutor_profile varchar(2000) not null,
+    tutor_profile varchar(2000) not null
 );
 
 create table ezy_course_c6
 (
-    course_id_serial primary key,
+    course_id serial primary key,
     tutor_id INT not null,
     course_name varchar(140) not null,
     course_description varchar(2000),
@@ -22,7 +26,7 @@ create table ezy_course_c6
     course_price INT,
     course_language varchar(30),
     course_level varchar(30),
-    course_time TIMESTAMP default now(),
+    posted_time TIMESTAMP default now(),
     /* ezy_course_c6의 tutor_id 컬럼을 ezy_tutor_c6의 tutor_id 컬럼의 외부키로 지정한다 */
     CONSTRAINT fk_tutor
         FOREIGN KEY(tutor_id)
@@ -31,9 +35,9 @@ create table ezy_course_c6
 );
 
 /* 데이터베이스 사용자에게 새롭게 생성한 테이블의 접근 권한을 부여한다. */
-grant all privileages on table ezy_tutor_c6 to truuser;
-grant all privileages on table ezy_course_c6 to truuser;
-grant all privileages on all sequences in schema public to truuser;
+grant all privileges on table ezy_tutor_c6 to truuser;
+grant all privileges on table ezy_course_c6 to truuser;
+grant all privileges on all sequences in schema public to truuser;
 
 /* 테스트를 위한 시드 데이터를 로드한다 */
 insert into ezy_tutor_c6(tutor_id, tutor_name, tutor_pic_url, tutor_profile)
@@ -47,5 +51,5 @@ values (2, 'Frank', 'http://s3.amazon.aws.com/pic2',
 insert into ezy_course_c6(course_id, tutor_id, course_name, course_level, posted_time)
 values (1, 1, 'First course', 'Beginner', '2021-04-12 05:40:00');
 
-insert into ezy_course_c6(course_id, tutor_id, course_name, course_leve, posted_time)
+insert into ezy_course_c6(course_id, tutor_id, course_name, course_level, posted_time)
 values (2, 1, 'Second course', 'ebook', '2021-04-12 05:45:00');

@@ -169,3 +169,4 @@ pub async fn update_course_details_db(
         Err(EzyTutorError::NotFound("Course id not found".into()))
     }
 }
+

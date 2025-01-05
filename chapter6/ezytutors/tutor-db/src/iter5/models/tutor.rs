@@ -3,17 +3,17 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Tutor {
-    tutor_id: i32,
-    tutor_name: String,
-    tutor_pic_url: String,
-    tutor_profile: String
+    pub tutor_id: i32,
+    pub tutor_name: String,
+    pub tutor_pic_url: String,
+    pub tutor_profile: String,
 }
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct NewTutor {
-    tutor_name: String,
-    tutor_pic_url: String,
-    tutor_profile: String
+    pub tutor_name: String,
+    pub tutor_pic_url: String,
+    pub tutor_profile: String,
 }
 
 impl From<web::Json<NewTutor>> for NewTutor {
@@ -28,9 +28,9 @@ impl From<web::Json<NewTutor>> for NewTutor {
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct UpdateTutor {
-    tutor_name: Option<String>,
-    tutor_pic_url: Option<String>,
-    tutor_profile: Option<String>
+    pub tutor_name: Option<String>,
+    pub tutor_pic_url: Option<String>,
+    pub tutor_profile: Option<String>
 }
 
 impl From<web::Json<UpdateTutor>> for UpdateTutor {

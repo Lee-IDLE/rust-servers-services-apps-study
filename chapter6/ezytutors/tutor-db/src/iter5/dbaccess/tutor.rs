@@ -16,15 +16,15 @@ pub async fn get_all_tutors_db(pool: &PgPool) ->
             .iter()
             .map(|tutor_row| Tutor {
                 tutor_id: tutor_row.tutor_id,
-                tutor_name: tutor_row.tutor_name,
-                tutor_pic_url: tutor_row.tutor_pic_url,
-                tutor_profile: tutor_row.tutor_profile,
+                tutor_name: tutor_row.tutor_name.clone(),
+                tutor_pic_url: tutor_row.tutor_pic_url.clone(),
+                tutor_profile: tutor_row.tutor_profile.clone(),
             })
             .collect();
         
         match tutors.len() {
             0 => Err(EzyTutorError::NotFound("No tutors found".into())),
-            1 => Ok(tutors),
+            _ => Ok(tutors),
         }
     }
 
@@ -40,9 +40,9 @@ pub async fn get_tutor_details_db(pool: &PgPool, tutor_id: i32) -> Result<Tutor,
     .await
     .map(|tutor_row| Tutor {
         tutor_id: tutor_row.tutor_id,
-        tutor_name: tutor_row.tutor_name,
-        tutor_pic_url: tutor_row.tutor_pic_url,
-        tutor_profile: tutor_row.tutor_profile,
+        tutor_name: tutor_row.tutor_name.clone(),
+        tutor_pic_url: tutor_row.tutor_pic_url.clone(),
+        tutor_profile: tutor_row.tutor_profile.clone(),
     })
     .map_err(|_err| EzyTutorError::NotFound("Tutor id not found".into()))?;
 
@@ -68,4 +68,27 @@ Result<Tutor, EzyTutorError> {
         tutor_pic_url: tutor_row.tutor_pic_url,
         tutor_profile: tutor_row.tutor_profile
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use actix_web::{http::StatusCode, ResponseError};
+    use dotenv::dotenv;
+    use sqlx::postgres::PgPool;
+    use std::env;
+    use std::sync::Mutex;
+
+    #[actix_rt::test]
+    async fn get_all_tutors_success() {
+        dotenv::dotenv().ok();
+        let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
+        let db_pool = sqlx::postgres::PgPool::connect(&database_url).await.unwrap();
+        let tutors = get_all_tutors_db(&db_pool).await.unwrap();
+
+        match tutors.len() {
+            0 => panic!("No tutors found"),
+            _ => assert_eq!(tutors.len() > 0, true),
+        }
+    }
 }
