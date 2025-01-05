@@ -38,6 +38,9 @@ async fn main() -> io::Result<()> {
     let app = move || {
         App::new()
             .app_data(shared_data.clone()) // App 상태를 애플리케이션 인스턴스에 주입
+            .app_data(web::JsonConfig::default().error_handler(|_err, _req| {
+                EzyTutorError::InvalidInput("Please provide valid Json input".to_string().into())
+            }))
             .configure(general_routes) // 라우트 구성
             .configure(course_routes)
             .configure(tutor_routes)
