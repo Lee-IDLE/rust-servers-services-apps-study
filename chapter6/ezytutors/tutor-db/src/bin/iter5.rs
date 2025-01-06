@@ -20,6 +20,7 @@ mod errors;
 
 use routes::*;
 use state::AppState;
+use errors::EzyTutorError;
 
 
 #[actix_web::main]
