@@ -2423,6 +2423,7 @@ dependencies = [
  "actix-rt",
  "actix-web",
  "awc",
+ "openssl",
  "serde",
  "serde_json",
  "tera",
