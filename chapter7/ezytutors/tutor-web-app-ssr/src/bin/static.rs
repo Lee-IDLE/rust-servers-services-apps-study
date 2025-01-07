@@ -1,4 +1,3 @@
-/*
 use actix_files as fs;
 use actix_web::{error, web, App, Error, HttpResponse, HttpServer, Result};
 use std::env;
@@ -10,10 +9,9 @@ async fn main() -> std::io::Result<()> {
     println!("Listening on: {}, open browser and visit have a try!", addr);
     HttpServer::new(|| {
         App::new()
-        .service(fs::Files::new("/static", "./static").show_files_listing())
+        .service(fs::Files::new("/", "./static").show_files_listing())
     })
     .bind(addr)?
     .run()
     .await
 }
-*/

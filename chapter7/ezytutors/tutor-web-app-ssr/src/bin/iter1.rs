@@ -1,5 +1,5 @@
 use actix_files as fs;
-use actix_web::{error, web, App, Error, HttpResponse, HttpServer, Result};
+use actix_web::{error, web::{self, Data}, App, Error, HttpResponse, HttpServer, Result};
 use std::env;
 use tera::Tera;
 
@@ -17,7 +17,7 @@ async fn main() -> std::io::Result<()> {
         // Tera 인스턴스를 애플리케이션의 디펜던시로 주입한다. 
         // 모든 라우트 핸들러 안에서 Tera에 접근할 수 있게 된다.
         App::new()
-        .app_data(tera) 
+        .app_data(Data::new(tera))
         .service(fs::Files::new("/static", "./static").show_files_listing())
         .service(web::resource("/").route(web::get().to(index)))
     })
@@ -37,7 +37,7 @@ async fn index(tmpl: web::Data<tera::Tera>) -> Result<HttpResponse, Error> {
         // 구성된 동적 웹페이지를 HTTP응답 바디의 일부로서 전달한다.
         // index 핸들러 함수에서 hTTP 응답을 반환한다. 
         .render("index.html", &ctx)
-        .map_err(|_| error::ErrorInternalServerError("Yemplate error"))?;
+        .map_err(|_| error::ErrorInternalServerError("Template error"))?;
 
     // index 핸들러 함수에서 HTTP 응답을 반환한다.
     // 구성된 동적 웹 페이지를 HTTP 응답 바디의 일부로 전달한다.
