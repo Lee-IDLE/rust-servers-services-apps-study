@@ -1,4 +1,3 @@
-use actix_files as fs;
 use actix_web::{error, web::{self, Data}, App, Error, HttpResponse, HttpServer, Result};
 use serde::{Deserialize, Serialize};
 use std::env;
@@ -63,4 +62,62 @@ fn app_config(cfg: &mut web::ServiceConfig) {
         .service(web::resource("/").route(web::get().to(index)))
         .service(web::resource("/tutors").route(web::post().to(handle_post_tutor)))
     );
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use actix_web::http::header::{CONTENT_TYPE, HeaderValue};
+    use actix_web::http::StatusCode;
+    use actix_web::web::Form;
+
+    use actix_web::dev::{Service, ServiceResponse};
+    use actix_web::test::{self, TestRequest};
+
+    // 이 애너테이션 이후의 함수가 Actix 런타임에 의해 실행돼야 하는 테스트 함수임을 Actix런타임에게 알린다.
+    #[actix_rt::test] 
+    async fn handle_post_1_unit_test() {
+        let params = Form(Tutor {
+            name: "Terry".to_string(),
+        });
+        let tera = tera::Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/static/iter2/**/*")).unwrap();
+        
+        let webdata_tera = web::Data::new(tera);
+        let resp = handle_post_tutor(webdata_tera, params).await.unwrap();
+
+        assert_eq!(resp.status(), StatusCode::OK);
+        assert_eq!(resp.headers().get(CONTENT_TYPE).unwrap(), HeaderValue::from_static("text/html"));
+    }
+
+    #[actix_rt::test]
+    async fn handle_post_1_integration_test() {
+        let tera = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/static/iter2/**/*")).unwrap();
+        
+        /** 
+         * init_service()를 사용해 테스팅을 위한 Actix Service를 만든다. 
+         * 이 서브시에 HTTP 메시지를 보내서 웹서버에 요청을 보내는 웹 클라이언트를 시뮬레이션할 수 있다.
+         * 일반적인 앱 빌더를 매개변수로 받으므로, 일반적인 Actix 웹 애플리케이션에서 했던 것처럼
+         * Tera 인스턴스와 애플리케이션 라우트를 전달할 수 있다.
+         * */ 
+        let app = test::init_service(
+            App::new().app_data(Data::new(tera)).configure(app_config)).await;
+
+        /**
+         * HTTP 요청 메시지는 TesrReqeust::post()를 사용해 구성된다.
+         * 이를 사용해 테스트 서버에 일반적인 POST 요청을 보낸다.
+         */
+        let req = test::TestRequest::post()
+            .uri("/tutors")
+            .set_form(&Tutor {
+                name: "Terry".to_string()
+            })
+            .to_request();
+        // to_request()는 TestRequest::post() 빌더에 전달된 매개변수를 정규 포맷의 HTTP 요청 메시지로 변환한다.
+
+        // 테스트 서버는 HTTP 요청 메시지와 함께 호출된다.
+        let resp: ServiceResponse = app.call(req).await.unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+        assert_eq!(resp.headers().get(CONTENT_TYPE).unwrap(),
+        HeaderValue::from_static("text/html"));
+    }
 }
