@@ -42,8 +42,14 @@ async fn handle_get_tutors(tmpl: web::Data<tera::Tera>) -> Result<HttpResponse, 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     println!("Listening on : 127.0.0.1:8080");
-    HttpServer::new(|| {
-        let tera = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/static/iter3/**/*")).unwrap();
+    HttpServer::new(move || {
+        let tera = match Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/static/iter3/**/*")) {
+            Ok(t) => t,
+            Err(e) => {
+                println!("Parsing error(s): {}", e);
+                std::process::exit(1);
+            }
+        };
 
         App::new()
         .app_data(Data::new(tera))
