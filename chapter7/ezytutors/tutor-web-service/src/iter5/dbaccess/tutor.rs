@@ -7,7 +7,7 @@ pub async fn get_all_tutors_db(pool: &PgPool) ->
         // SQL 구문 준비
         let tutor_rows = sqlx::query!(
             "SELECT tutor_id, tutor_name, tutor_pic_url, tutor_profile 
-            FROM ezy_tutor_c6")
+            FROM ezy_tutor_c7")
             .fetch_all(pool)
             .await?;
 
@@ -32,7 +32,7 @@ pub async fn get_tutor_details_db(pool: &PgPool, tutor_id: i32) -> Result<Tutor,
     // SQL 구문 준비
     let tutor_row = sqlx::query!(
         "SELECT tutor_id, tutor_name, tutor_pic_url, tutor_profile 
-        FROM ezy_tutor_c6 
+        FROM ezy_tutor_c7 
         WHERE tutor_id = $1",
         tutor_id
     )
@@ -52,7 +52,7 @@ pub async fn get_tutor_details_db(pool: &PgPool, tutor_id: i32) -> Result<Tutor,
 pub async fn post_new_tutor_db(pool: &PgPool, new_tutor: NewTutor) -> 
 Result<Tutor, EzyTutorError> {
     let tutor_row = sqlx::query!(
-        "insert into ezy_tutor_c6 (
+        "insert into ezy_tutor_c7 (
         tutor_name, tutor_pic_url, tutor_profile
         ) values ($1, $2, $3)
         returning tutor_id, tutor_name, tutor_pic_url, tutor_profile",
@@ -74,7 +74,7 @@ pub async fn update_tutor_details_db(pool: &PgPool, tutor_id: i32, change_tutor:
 Result<Tutor, EzyTutorError> {
     let tutor_row = sqlx::query!(
         "SELECT tutor_id, tutor_name, tutor_pic_url, tutor_profile 
-        FROM ezy_tutor_c6
+        FROM ezy_tutor_c7
         WHERE tutor_id = $1",
         tutor_id
     )
@@ -103,7 +103,7 @@ Result<Tutor, EzyTutorError> {
 
     // SQL 구문을 준비한다.
     let tutor_updated_row = sqlx::query!(
-        "UPDATE ezy_tutor_c6
+        "UPDATE ezy_tutor_c7
         SET tutor_name = $1, tutor_pic_url = $2, tutor_profile = $3
         WHERE tutor_id = $4 returning
         tutor_id, tutor_name, tutor_pic_url, tutor_profile",
@@ -129,7 +129,7 @@ pub async fn delete_tutor_db(pool: &PgPool, tutor_id: i32) ->
 Result<String, EzyTutorError> {
     // SQL 구문을 준비하는다.
     let tutor_row = sqlx::query!(
-        "DELETE FROM ezy_tutor_c6
+        "DELETE FROM ezy_tutor_c7
         WHERE tutor_id = $1",
         tutor_id
     )

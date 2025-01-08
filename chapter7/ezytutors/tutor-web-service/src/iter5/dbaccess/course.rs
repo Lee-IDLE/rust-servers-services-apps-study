@@ -7,7 +7,7 @@ pub async fn get_courses_for_tutor_db(pool: &PgPool, tutor_id: i32) -> Result<Ve
     let course_rows = sqlx::query_as!(
         Course,
         "SELECT * 
-        FROM ezy_course_c6 
+        FROM ezy_course_c7 
         WHERE tutor_id = $1",
         tutor_id
     )
@@ -22,7 +22,7 @@ pub async fn get_course_details_db(pool: &PgPool, tutor_id: i32, course_id: i32)
     let course_row = sqlx::query_as!(
         Course,
         "SELECT * 
-         FROM ezy_course_c6 
+         FROM ezy_course_c7 
          WHERE tutor_id = $1 AND course_id = $2",
          tutor_id, course_id
     )
@@ -41,7 +41,7 @@ pub async fn post_new_course_db(pool: &PgPool, new_course: CreateCourse) -> Resu
     // SQL 구문 준비
     let course_row = sqlx::query_as!(
         Course,
-        "INSERT INTO ezy_course_c6 (
+        "INSERT INTO ezy_course_c7 (
             tutor_id, course_name, course_description, course_duration,
             course_level, course_format, course_language, course_structure,
             course_price)
@@ -70,7 +70,7 @@ pub async fn delete_course_db(
 ) -> Result<String, EzyTutorError> {
     // SQL 구문을 준비한다.
     let course_row = sqlx::query!(
-        "DELETE FROM ezy_course_c6 
+        "DELETE FROM ezy_course_c7 
         WHERE tutor_id = $1 
         AND course_id = $2",
         tutor_id,
@@ -92,7 +92,7 @@ pub async fn update_course_details_db(
     let current_course_row = sqlx::query_as!(
         Course,
         "SELECT * 
-        FROM ezy_course_c6 
+        FROM ezy_course_c7 
         WHERE tutor_id = $1 AND course_id = $2",
         tutor_id,
         course_id
@@ -146,7 +146,7 @@ pub async fn update_course_details_db(
     // SQL 구문을 준비한다.
     let course_row = sqlx::query_as!(
         Course,
-        "UPDATE ezy_course_c6 
+        "UPDATE ezy_course_c7 
         SET course_name = $1, course_description = $2, course_format = $3,
         course_structure = $4, course_duration = $5, course_price = $6,
         course_language = $7, course_level = $8

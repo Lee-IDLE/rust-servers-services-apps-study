@@ -20,7 +20,7 @@ mod errors;
 
 use routes::*;
 use state::AppState;
-
+use errors::EzyTutorError;
 
 #[actix_web::main]
 async fn main() -> io::Result<()> {
@@ -39,7 +39,7 @@ async fn main() -> io::Result<()> {
         App::new()
             .app_data(shared_data.clone()) // App 상태를 애플리케이션 인스턴스에 주입
             .app_data(web::JsonConfig::default().error_handler(|_err, _req| {
-                EzyTutorError::InvalidInput("Please provide valid Json input".to_string().into())
+                EzyTutorError::InvalidInput("Please provide valid Json input".to_string()).into()
             }))
             .configure(general_routes) // 라우트 구성
             .configure(course_routes)
