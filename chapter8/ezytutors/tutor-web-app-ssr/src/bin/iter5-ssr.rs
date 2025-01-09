@@ -37,7 +37,5 @@ async fn main() -> std::io::Result<()> {
     })
     .bind(&host_port)?
     .run()
-    .await;
-
-    Ok(())
+    .await
 }
