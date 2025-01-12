@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Model {
+pub struct TutorRegisterForm {
     pub username: String,
     pub password: String,
     pub confirmation: String,
