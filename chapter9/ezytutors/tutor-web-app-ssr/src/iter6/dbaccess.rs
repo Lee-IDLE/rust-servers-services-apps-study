@@ -1,5 +1,5 @@
-use crate::iter5::errors::EzyTutorError;
-use crate::iter5::model::*;
+use crate::iter6::errors::EzyTutorError;
+use crate::iter6::model::*;
 use sqlx::postgres::PgPool;
 
 // 결과를 반환한다

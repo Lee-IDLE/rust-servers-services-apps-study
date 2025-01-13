@@ -1,9 +1,9 @@
 use actix_web::{web, Error, HttpResponse, Result};
 use argon2::{self,Config};
 use awc::body::MessageBody;
-use crate::iter5::dbaccess::{get_user_record, post_new_user};
+use crate::iter6::dbaccess::{get_user_record, post_new_user};
 use serde_json::json;
-use super::{errors::EzyTutorError, model::{TutorRegisterForm, TutorResponse, User}, state::AppState};
+use super::{errors::EzyTutorError, model::{TutorRegisterForm, TutorResponse, User, TutorSigninForm}, state::AppState};
 
 // 사용자에게 등록 폼을 표시하는 핸들러 함수
 pub async fn show_register_form(tmpl: web::Data<tera::Tera>) -> Result<HttpResponse, Error> {
@@ -106,4 +106,26 @@ pub async fn handle_register(
     };
 
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
+}
+
+// 폼 필드를 초기화하고 signin.html을 사용자에게 표시한다.
+pub async fn show_signin_form(tmpl: web::Data<tera::Tera>) 
+-> Result<HttpResponse, Error> {
+    let mut ctx = tera::Context::new();
+    ctx.insert("error", "");
+    ctx.insert("current_name", "");
+    ctx.insert("current_password", "");
+    let s = tmpl
+        .render("signinform.html", &ctx)
+        .map_err(|_| EzyTutorError::TeraError("Temple error".to_string()))?;
+
+    Ok(HttpResponse::Ok().content_type("text/html").body(s))
+}
+
+pub async fn handle_signin(
+    tmpl: web::Data<tera::Tera>,
+    app_state: web::Data<AppState>,
+    params: web::Form<TutorSigninForm>
+) -> Result<HttpResponse, Error> {
+    Ok(HttpResponse::Ok().finish())
 }

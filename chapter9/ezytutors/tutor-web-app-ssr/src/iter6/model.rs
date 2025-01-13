@@ -23,3 +23,10 @@ pub struct User {
     pub tutor_id: Option<i32>,
     pub user_password: String,
 }
+
+// 강사들이 로그인할 수 있는 폼
+#[derive(Serialize, Deserialize, Debug)]
+pub struct TutorSigninForm {
+    pub username: String,
+    pub password: String
+}
