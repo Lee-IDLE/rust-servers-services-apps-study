@@ -1,6 +1,6 @@
 #[path = "../iter6/mod.rs"]
 mod iter6;
-use iter6::{errors, handler, routes, state}; // dbaccess
+use iter6::{errors, handler, routes, state, dbaccess, model}; // dbaccess
 use actix_web::{web, App, HttpServer};
 use routes::app_config;
 use dotenv::dotenv;
@@ -8,6 +8,7 @@ use std::env;
 use sqlx::postgres::PgPool;
 
 use tera::Tera;
+
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -28,7 +29,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         let tera = Tera::new(concat!(env!("CARGO_MANIFEST_DIR")
-            , "/static/iter5/**/*")).unwrap();
+            , "/static/iter6/**/*")).unwrap();
 
         App::new()
             .app_data(web::Data::new(tera))

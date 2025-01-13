@@ -116,7 +116,7 @@ pub async fn show_signin_form(tmpl: web::Data<tera::Tera>)
     ctx.insert("current_name", "");
     ctx.insert("current_password", "");
     let s = tmpl
-        .render("signinform.html", &ctx)
+        .render("signin.html", &ctx)
         .map_err(|_| EzyTutorError::TeraError("Temple error".to_string()))?;
 
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
@@ -127,5 +127,43 @@ pub async fn handle_signin(
     app_state: web::Data<AppState>,
     params: web::Form<TutorSigninForm>
 ) -> Result<HttpResponse, Error> {
-    Ok(HttpResponse::Ok().finish())
+    let mut ctx = tera::Context::new();
+    let s;
+    let username = params.username.clone();
+    let user = get_user_record(
+        &app_state.db, username.to_string()).await;
+    if let Ok(user) = user {
+        let does_password_match = argon2::verify_encoded(
+            &user.user_password,
+            params.password.as_bytes()
+        ).unwrap();
+        if !does_password_match {
+            // 아이디는 존재하지만 비밀번호가 틀린 경우
+            // 에러 메시지와 함께 로그인 폼을 사용자에게 반환한다.
+            ctx.insert("error", "Invalid login");
+            ctx.insert("current_name", &params.username);
+            ctx.insert("current_password", &params.password);
+            s = tmpl
+                .render("signin.html", &ctx)
+                .map_err(|_| EzyTutorError::TeraError("Template error".to_string()))?;
+        } else {
+            ctx.insert("title", &"Signin confirmation!".to_owned());
+            ctx.insert("name", &params.username);
+            ctx.insert("message", &"You have successfully logged in to EzyTutor!".to_owned());
+            s = tmpl
+                .render("user.html", &ctx)
+                .map_err(|_| EzyTutorError::TeraError("Template error".to_string()))?;
+        }
+    } else {
+        // 데이터베이스에 사용자명이 존재하지 않으면, 
+        // 에러 메시지와 함께 로그인 폼을 반환한다.
+        ctx.insert("error", "User id not found");
+        ctx.insert("current_name", &params.username);
+        ctx.insert("current_password", &params.password);
+        s = tmpl
+            .render("signin.html", &ctx)
+            .map_err(|_| EzyTutorError::TeraError("Template error".to_string()))?
+    };
+
+    Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }
