@@ -1,0 +1,38 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug",
+            "program": "${workspaceFolder}/<executable file>",
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug iter6-ssr",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=iter6-ssr",
+                    "--package=tutor-web-app-ssr"
+                ]
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "DATABASE_URL": "postgres://truuser:trupwd@localhost:5432/ezytutors",
+                "HOST_PORT": "127.0.0.1:8080",
+                "PROJECT_ROOT": "${workspaceFolder}",
+                "CARGO_MANIFEST_DIR": "${workspaceFolder}"
+            },
+            "program": "${cargo:program}",
+            "sourceLanguages": ["rust"]
+        }
+    ]
+}

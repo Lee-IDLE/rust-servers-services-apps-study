@@ -3,7 +3,7 @@ use argon2::{self,Config};
 use awc::body::MessageBody;
 use crate::iter6::dbaccess::{get_user_record, post_new_user};
 use serde_json::json;
-use super::{errors::EzyTutorError, model::{TutorRegisterForm, TutorResponse, User, TutorSigninForm}, state::AppState};
+use crate::iter6::{errors::EzyTutorError, model::{TutorRegisterForm, TutorResponse, User, TutorSigninForm}, state::AppState};
 
 // 사용자에게 등록 폼을 표시하는 핸들러 함수
 pub async fn show_register_form(tmpl: web::Data<tera::Tera>) -> Result<HttpResponse, Error> {
@@ -20,7 +20,7 @@ pub async fn show_register_form(tmpl: web::Data<tera::Tera>) -> Result<HttpRespo
         .render("register.html", &ctx) // register.html 템플릿을 렌더링 한다.
         .map_err(|_| EzyTutorError::TeraError("Template error".to_string()))?;
 
-    // 와넌히 구성된 register.html 파일을 HTTP 응답의 일부분으로 반환한다.
+    // 완전히 구성된 register.html 파일을 HTTP 응답의 일부분으로 반환한다.
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }
 
