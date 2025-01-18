@@ -1,0 +1,13 @@
+[package]
+name = "p2p-learn"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "iter2"
+
+[dependencies]
+#libp2p = { version = "0.55.0", features = ["full"] }
+libp2p = { version = "0.55.0", features = ["macros", "tokio", "tcp", "noise", "yamux", "autonat", "identify", "dns", "quic"] }
+tokio = { version = "1.43.0", features = ["full"] }
+subtle = "2.5.0"
