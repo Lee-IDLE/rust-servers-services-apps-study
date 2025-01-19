@@ -10,7 +10,8 @@ use libp2p::{
     noise, // 암호화 프로토콜
     tcp, yamux, Multiaddr, SwarmBuilder, // 주소 및 스웜 구성
     swarm::{Swarm, SwarmEvent, NetworkBehaviour},
-    ping
+    ping,
+    gossipsub::{self, IdentTopic as Topic, MessageAuthenticity, ValidationMode}
 };
 use std::error::Error;
 use std::time::Duration;
@@ -19,7 +20,9 @@ use std::time::Duration;
 struct Behaviour {
     ping: ping::Behaviour,
     mdns: mdns::tokio::Behaviour,
+    gossipsub: gossipsub::Behaviour
 }
+
 /**
  * libp2p는 p2p 애플리케이션 개발을 가능하게 하는 프로토콜, 명세, 라이브러리의
  * 모듈러 시스템이다. libp2p의 핵심 아키텍처 컴포넌트는 전송, 신원, 보안, 피어 발견, 
@@ -31,7 +34,23 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let new_peer_id = PeerId::from(new_key.public());
     println!("local peer id is: {:?}", new_peer_id);
 
-    // development_transport -> libp2p::SwarmBuilder 사용으로 대체됨
+    // Gossipsub 설정
+    let gossipsub_config = gossipsub::ConfigBuilder::default()
+        .heartbeat_interval(Duration::from_secs(10)) // 하트비트 간격
+        .validation_mode(ValidationMode::Strict) // 메시지 검증 모드
+        .build()
+        .expect("Valid config");
+
+    // Gossipsub 동작 생성
+    let mut gossipsub = gossipsub::Behaviour::new(
+        MessageAuthenticity::Signed(new_key.clone()),
+        gossipsub_config
+    ).expect("Valid configuration");
+
+    // 토픽 설정
+    let topic = Topic::new("test-net");
+    // 토픽 구독
+    gossipsub.subscribe(&topic)?;
 
     // p2p 네트워크 스웜 구성
     let mut swarm = SwarmBuilder::with_new_identity()
@@ -52,6 +71,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 mdns: mdns::tokio::Behaviour::new(
                     mdns::Config::default(),
                     key.public().to_peer_id())?,
+                gossipsub: gossipsub.into()
             })
         })?
         .with_swarm_config(|c| c.with_idle_connection_timeout(Duration::from_secs(60)))
@@ -137,7 +157,23 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     }
                 }
             }
+            // Gossipsub 이벤트 처리
+            SwarmEvent::Behaviour(BehaviourEvent::Gossipsub(gossipsub::Event::Message {
+                propagation_source: peer_id,
+                message_id: id,
+                message,
+            })) => {
+                println!(
+                    "Got message: '{}' with id: {} from peer: {:?}",
+                    String::from_utf8_lossy(&message.data),
+                    id,
+                    peer_id
+                );
+            }
             _ => {}
         }
+
+        // 메시지 발신 예시:
+        // swarm.behaviour_mut().gossipsub.publish(topic, "Hello peers!".as_bytes())?;
     }
 }
