@@ -34,7 +34,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         )?
         .with_quic()
         .with_dns()?
-        // 스웜과 연결하기 위해 더미 네트워크 동작 생성
+        // 스웜과 연결하기 위해 더미 네트워크 동작 생성 
         .with_behaviour(|key| dummy::Behaviour)?
         .with_swarm_config(|c| c.with_idle_connection_timeout(Duration::from_secs(60)))
         .build();
@@ -48,6 +48,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // 모든 네트워크 인터페이스에서 임의의 포트로 리스닝
     swarm.listen_on("/ip4/0.0.0.0/tcp/0".parse()?);
+
     /*
     swarm.listen_on(
         Multiaddr::empty()
