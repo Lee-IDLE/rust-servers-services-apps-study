@@ -1,0 +1,24 @@
+# 빌드 스테이지: Rust 컴파일을 위한 환경
+FROM rust:slim-bookworm as builder
+
+# 새로운 빈 프로젝트 생성
+WORKDIR /usr/src/docker-rust
+COPY . .
+
+# 릴리즈 빌드
+RUN cargo build --release
+
+# 실행 스테이지: 최소한의 실행 환경
+FROM debian:bookworm-slim
+
+# 필요한 라이브러리 설치
+RUN apt-get update && apt-get install -y libssl3 && rm -rf /var/lib/apt/lists/*
+
+# 바이너리 복사
+COPY --from=builder /usr/src/docker-rust/target/release/docker-rust /usr/local/bin/
+
+# 포트 설정
+EXPOSE 8080
+
+# 실행 명령
+CMD ["docker-rust"]

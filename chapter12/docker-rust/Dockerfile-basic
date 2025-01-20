@@ -1,0 +1,17 @@
+# 메인 rust 도커 이미지를 사용한다.
+FROM rust
+
+# app을 도커 이미지에 복사한다.
+COPY . /app
+
+# 작업 디렉터리를 설정한다.
+WORKDIR /app
+
+# 앱을 빌드한다.
+RUN cargo build --release
+
+# 애플리케이션을 시작한다.
+CMD ["./target/release/docker-rust"]
+
+# docker build -f Dockerfile-basic . -t docker-rust-basic
+# docker run -p 8080:8080 -t docker-rust-basic
