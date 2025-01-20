@@ -101,6 +101,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
     )?;
      */
     
+    // 특정 토픽으로 메시지 발송
+    //swarm.behaviour_mut().gossipsub.publish(topic, "Hello peers!".as_bytes())?;
+    /**
+     * 메시지를 보내려면:
+        먼저 피어들이 같은 토픽("test-net")을 구독하고 있어야 합니다.
+        swarm.behaviour_mut().gossipsub.publish()를 사용하여 메시지를 발송합니다.
+        같은 토픽을 구독중인 모든 피어들이 메시지를 수신하게 됩니다.
+     */
 
     // cargo run --bin iter3 /ip4/127.0.0.1/tcp/----- -> 첫음 실행한 노드에서 나오는 포트번호 입력
     loop {
